@@ -29,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   ScrollController _controller;
   double _currentExtent = _maxExtent;
+  ValueNotifier<double> _currentExtentNotifier = ValueNotifier<double>(_maxExtent);
   double _magnificant = 1.0;
 
   @override
@@ -53,7 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
             slivers: <Widget>[
               SliverAppBar(
                 pinned: true,
-                backgroundColor: Color.fromARGB(0, 0, 0, 0),
                 elevation: 0.0,
                 expandedHeight: _appBarExpandedSize,
                 flexibleSpace: LayoutBuilder(builder:
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: SizedIcon(
                             initSize: _iconSize,
                             magnificant: 0.66,
-                            opacity: _magnificant > 0.67 ? 0.0 : 1.0,
+                            // opacity: _magnificant > 0.67 ? 0.0 : 1.0,
                           ),
                         ),
                       ],
@@ -94,14 +94,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-          Positioned(
-            top: _currentExtent - _iconSize / 3,
-            left: 20,
-            child: SizedIcon(
-              opacity: _magnificant > 0.66 ? 1.0 : 0.0,
-              initSize: _iconSize,
-              magnificant: _magnificant,
-            ),
+          ValueListenableBuilder(
+            valueListenable: _currentExtentNotifier,
+            builder: (context, value, _) {
+              return Positioned(
+                top: value - _iconSize / 3,
+                left: 20,
+                child: SizedIcon(
+                  opacity: _magnificant > 0.66 ? 1.0 : 0.0,
+                  initSize: _iconSize,
+                  magnificant: _magnificant,
+                ),
+              );
+            }
           ),
         ],
       ),
@@ -116,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _didScrolled() {
     _magnificant = _calcClampedPercentage(_currentExtent, 76.0, _maxExtent);
-    setState(() {});
+    _currentExtentNotifier.value = _currentExtent;
   }
 }
 
