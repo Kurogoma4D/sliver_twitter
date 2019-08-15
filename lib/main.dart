@@ -45,62 +45,49 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          CustomScrollView(
-            physics: ClampingScrollPhysics(),
-            controller: _controller,
-            slivers: <Widget>[
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                elevation: 0.0,
-                expandedHeight: _appBarExpandedSize,
-                flexibleSpace: LayoutBuilder(builder:
-                    (BuildContext context, BoxConstraints constraints) {
-                  // print('constraints=' + constraints.toString());
-                  final _bottom = constraints.biggest.height;
-                  _currentExtent = _bottom;
-                  return FlexibleSpaceBar(
-                    collapseMode: CollapseMode.pin,
-                    title: Text(_bottom.toString()),
-                    background: _buildBackGround(_bottom),
-                  );
-                }),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  <Widget>[
-                    Stack(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 200,
-                        ),
-                        Positioned(
-                          left: 20,
-                          top: -_iconSize / 3,
-                          child: SizedIcon(
-                            initSize: _iconSize,
-                            magnificant: 0.66,
-                            opacity: _magnificant > 0.67 ? 0.0 : 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ]..addAll(
-                      List.generate(20, (index) => _buildListItem(index)),
-                    ),
-                ),
-              ),
-            ],
+      body: CustomScrollView(
+        physics: ClampingScrollPhysics(),
+        controller: _controller,
+        slivers: <Widget>[
+          SliverAppBar(
+            pinned: true,
+            // backgroundColor: Color.fromRGBO(0, 0, 0, 0),
+            
+            elevation: 0.0,
+            expandedHeight: _appBarExpandedSize,
+            flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+              // print('constraints=' + constraints.toString());
+              final _bottom = constraints.biggest.height;
+              _currentExtent = _bottom;
+              return FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                title: Text(_bottom.toString()),
+                background: _buildBackGround(_bottom, _magnificant),
+              );
+            }),
           ),
-          Positioned(
-            top: _currentExtent - _iconSize / 3,
-            left: 20,
-            child: SizedIcon(
-              opacity: _magnificant > 0.66 ? 1.0 : 0.0,
-              initSize: _iconSize,
-              magnificant: _magnificant,
+          SliverList(
+            delegate: SliverChildListDelegate(
+              <Widget>[
+                Stack(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 200,
+                    ),
+                    Positioned(
+                      left: 20,
+                      top: -_iconSize / 3,
+                      child: SizedIcon(
+                        initSize: _iconSize,
+                        magnificant: _magnificant,
+                      ),
+                    ),
+                  ],
+                ),
+              ]..addAll(
+                  List.generate(20, (index) => _buildListItem(index)),
+                ),
             ),
           ),
         ],
@@ -120,10 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Widget _buildBackGround(double bottom) {
-  return DecoratedBox(
-    decoration: BoxDecoration(
-      color: Colors.green,
+Widget _buildBackGround(double bottom, double magnificant) {
+  return ClipPath(
+    clipper: AppBarClipper(iconOffsetY: _maxExtent + _iconSize/2/3, radius: _iconSize/2 * magnificant),
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.green,
+      ),
     ),
   );
 }
